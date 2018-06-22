@@ -30,7 +30,7 @@ class Unicorn:
         self.prep_func = preprocess_input
         self.scale_features = True
         self.n_clusters = 4
-        self.n_pca_comps = 10
+        self.n_pca_comps = 5
 
     def load_image(self, img_path):
         ''' load image given path and convert to an array
@@ -263,11 +263,11 @@ class Unicorn:
             # result = self.run_kmeans(feature_data, processed_feature_data)
 
             # # kmeans on pairwise distance
-            pwise_dist_df = self.calc_distance(feature_data)
-            result = self.run_kmeans(feature_data, pwise_dist_df)
+            # pwise_dist_df = self.calc_distance(feature_data)
+            # result = self.run_kmeans(feature_data, pwise_dist_df)
 
             # knn on image features
-            # result = self.run_knn(feature_data)
+            result = self.run_knn(feature_data)
 
         # Use fast fourier transform
         else:
@@ -284,6 +284,7 @@ if __name__ == '__main__':
 
     # # # use fourier transform
     # unicorn.cnn_features = False
+    # unicorn.scale_features = False
 
     # confirm sample_data grabs valid image paths when testing:
     sample_data = [(os.getcwd() + '/images/' + i) for i in os.listdir('images')]
