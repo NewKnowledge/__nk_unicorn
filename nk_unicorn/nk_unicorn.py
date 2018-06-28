@@ -9,9 +9,10 @@ import requests
 import numpy as np
 import pandas as pd
 
-from scipy.fftpack import fft
-from sklearn.cluster import KMeans
-from sklearn.neighbors import NearestNeighbors
+# from scipy.fftpack import fft
+# from sklearn.cluster import KMeans
+# from sklearn.neighbors import NearestNeighbors
+from sklearn.cluster import DBSCAN
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 # import sklearn.metrics as sm
@@ -180,7 +181,10 @@ class Unicorn:
 
         return feature_data
 
-    def haar_wavelet_features():
+    def haar_wavelet_features(self, feature_data):
+        ''' takes feature data and performs haar wavelet
+            transformation.
+        '''
         pass
 
     def pca_image_features(self, feature_data):
@@ -235,6 +239,18 @@ class Unicorn:
 
         return output_data
 
+    def run_dbscan(self, feature_data, target_data):
+
+        dbscn = DBSCAN(eps=0.3, min_samples=1).fit(target_data)
+
+        output_data = pd.concat(
+            {'label': pd.Series(feature_data.index),
+             'pred_class': pd.Series(dbscn.labels_)},
+            axis=1
+        )
+
+        return output_data
+
     def run_knn(self, target_data):
 
         nbrs = NearestNeighbors(
@@ -262,12 +278,16 @@ class Unicorn:
             # processed_feature_data = self.pca_image_features(feature_data)
             # result = self.run_kmeans(feature_data, processed_feature_data)
 
+            # DBSCAN on imagenet activation
+            processed_feature_data = self.pca_image_features(feature_data)
+            result = self.run_dbscan(feature_data, processed_feature_data)
+
             # # kmeans on pairwise distance
             # pwise_dist_df = self.calc_distance(feature_data)
             # result = self.run_kmeans(feature_data, pwise_dist_df)
 
             # knn on image features
-            result = self.run_knn(feature_data)
+            # result = self.run_knn(feature_data)
 
         # Use fast fourier transform
         else:
