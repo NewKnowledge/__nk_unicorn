@@ -8,10 +8,27 @@ services:
   nk_unicorn:
     build:
       context: .
-      dockerfile: lib.dockerfile
-    
-    environment:
-      - PORT=5000
+      dockerfile: http.dockerfile
+    depends_on:
+      - cluster-db
+      - social-db
+    env_file:
+      - db.env
+    ports: 
+      - 5000:5000
+    networks:
+      - backend
 
+  cluster-db:
+    image: newknowledge.azurecr.io/ds/cluster-db-dev:seed-latest
+    environment:
+      - POSTGRES_USER=cluster_db
+    networks:
+      - backend
+
+  social-db:
+    image: newknowledge.azurecr.io/ds/social-db-dev:seed-latest
+    environment:
+      - POSTGRES_USER=social
     networks:
       - backend
