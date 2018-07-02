@@ -1,0 +1,54 @@
+body            { font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;}
+a, h1, h2       { color: #000000; }
+h1, h2          { margin: 0; }
+h1              { border-bottom: 2px solid #eee; }
+h2              { font-size: 1.2em; }
+
+.targetimg   { 
+  width: 700px; 
+  height: auto;
+  padding-left: 200px; 
+}
+
+.mainbody { line-height: 300%; }
+
+.container {
+    width: 100%;
+    margin: auto;
+    padding: 10px;
+}
+.one {
+    width: 35%;
+    float: left;
+}
+.two {
+  width: 55%;
+    margin-left: 15%;
+}
+
+.urlentry {
+  width: 45%;
+    height: 50px;
+    padding: 12px 20px;
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    background-color: #f8f8f8;
+    resize: none;
+}
+
+.urlentrybutton {
+  padding: 12px 20px;
+  border: 2px solid red;
+    border-radius: 4px;
+}
+
+table.dataframe, .dataframe th, .dataframe td {
+  border: none;
+  border-bottom: 1px solid #C8C8C8;
+  border-collapse: collapse;
+  text-align:left;
+  padding: 10px;
+  margin-bottom: 40px;
+  font-size: 0.9em;
+}

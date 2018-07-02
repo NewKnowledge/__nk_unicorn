@@ -241,7 +241,7 @@ class Unicorn:
 
     def run_dbscan(self, feature_data, target_data):
 
-        dbscn = DBSCAN(eps=0.3, min_samples=1).fit(target_data)
+        dbscn = DBSCAN(eps=100, min_samples=1).fit(target_data)
 
         output_data = pd.concat(
             {'label': pd.Series(feature_data.index),
@@ -273,6 +273,8 @@ class Unicorn:
         # Use CNN-generated features
         if self.cnn_features:
             feature_data = self.get_net_features(image_paths)
+
+            feature_data.to_csv('mexico_profile_feature_data.csv')
 
             # # kmeans on imagenet activation
             # processed_feature_data = self.pca_image_features(feature_data)
@@ -309,4 +311,5 @@ if __name__ == '__main__':
     # confirm sample_data grabs valid image paths when testing:
     sample_data = [(os.getcwd() + '/images/' + i) for i in os.listdir('images')]
     result = unicorn.cluster_images(sample_data)
+    result.to_csv('test.csv')
     print(result)

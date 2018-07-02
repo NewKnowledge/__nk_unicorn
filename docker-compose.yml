@@ -1,0 +1,17 @@
+version: '3'
+
+networks:
+  backend:
+
+services:
+
+  nk_unicorn:
+    build:
+      context: .
+      dockerfile: lib.dockerfile
+    
+    environment:
+      - PORT=5000
+
+    networks:
+      - backend

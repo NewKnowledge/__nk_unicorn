@@ -1,0 +1,17 @@
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+
+<div class = mainbody>
+
+	<h1>here's are the group assignments for your image:</h1>
+	
+	<section class="container">
+
+			{{ table|safe }}
+
+	</section>
+
+	<br><br>
+
+	<a href="{{ url_for('index') }}">Try another!</a>
+
+</div>
