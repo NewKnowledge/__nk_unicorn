@@ -1,0 +1,34 @@
+version: '3'
+
+networks:
+  backend:
+
+services:
+
+  nk_unicorn:
+    build:
+      context: .
+      dockerfile: http.dockerfile
+    depends_on:
+      - cluster-db
+      - social-db
+    env_file:
+      - .env
+    ports: 
+      - 5000:5000
+    networks:
+      - backend
+
+  cluster-db:
+    image: newknowledge.azurecr.io/ds/cluster-db-dev:seed-latest
+    environment:
+      - POSTGRES_USER=cluster_db
+    networks:
+      - backend
+
+  social-db:
+    image: newknowledge.azurecr.io/ds/social-db-dev:seed-communities
+    environment:
+      - POSTGRES_USER=social
+    networks:
+      - backend

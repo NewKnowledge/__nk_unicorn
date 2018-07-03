@@ -19,12 +19,13 @@ from sklearn.decomposition import PCA
 
 from keras.preprocessing import image
 from keras.applications.inception_v3 \
-    import decode_predictions, preprocess_input
+    import InceptionV3, decode_predictions, preprocess_input
 
 
 class Unicorn:
 
     def __init__(self):
+        self.model = InceptionV3(weights='imagenet', include_top=False)
         self.cnn_features = True
         self.target_size = (299, 299)
         self.alpha_fill = '#ffffff'
@@ -137,8 +138,7 @@ class Unicorn:
         ''' Returns features of images (defaults to inception V3:imagenet wts)
             from paths provided as a list
         '''
-        from keras.applications.inception_v3 import InceptionV3
-        self.model = InceptionV3(weights='imagenet', include_top=False)
+
         num_images = len(image_paths)
         feature_data = pd.DataFrame()
 
@@ -241,7 +241,7 @@ class Unicorn:
 
     def run_dbscan(self, feature_data, target_data):
 
-        dbscn = DBSCAN(eps=0.3, min_samples=1).fit(target_data)
+        dbscn = DBSCAN(eps=100, min_samples=1).fit(target_data)
 
         output_data = pd.concat(
             {'label': pd.Series(feature_data.index),
