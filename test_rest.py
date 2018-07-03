@@ -6,9 +6,8 @@ from json import JSONDecoder, loads, dumps
 address = "http://localhost:5000"
 decoder = JSONDecoder()
 
-# test_file_urls = dumps({'image_paths': ['http://i0.kym-cdn.com/photos/images/facebook/001/253/011/0b1.jpg','http://i0.kym-cdn.com/photos/images/facebook/001/253/011/0b1.jpg','http://i0.kym-cdn.com/photos/images/facebook/001/253/011/0b1.jpg','http://i0.kym-cdn.com/photos/images/facebook/001/253/011/0b1.jpg','http://i0.kym-cdn.com/photos/images/facebook/001/253/011/0b1.jpg','http://i0.kym-cdn.com/photos/images/facebook/001/253/011/0b1.jpg']})
-test_file_urls = dumps({'image_paths': [(os.getcwd() + '/images/' + i) for i in os.listdir('images')]})
-# loads(test_file_urls)
+test_file_urls = dumps({'image_paths': ['http://i0.kym-cdn.com/photos/images/facebook/001/253/011/0b1.jpg','http://i0.kym-cdn.com/photos/images/facebook/001/253/011/0b1.jpg','http://i0.kym-cdn.com/photos/images/facebook/001/253/011/0b1.jpg','http://i0.kym-cdn.com/photos/images/facebook/001/253/011/0b1.jpg','http://i0.kym-cdn.com/photos/images/facebook/001/253/011/0b1.jpg','http://i0.kym-cdn.com/photos/images/facebook/001/253/011/0b1.jpg']})
+
 
 print("DEBUG::chkpt0")
 print(test_file_urls)
