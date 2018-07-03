@@ -13,7 +13,7 @@ services:
       - cluster-db
       - social-db
     env_file:
-      - db.env
+      - .env
     ports: 
       - 5000:5000
     networks:
@@ -27,7 +27,7 @@ services:
       - backend
 
   social-db:
-    image: newknowledge.azurecr.io/ds/social-db-dev:seed-latest
+    image: newknowledge.azurecr.io/ds/social-db-dev:seed-communities
     environment:
       - POSTGRES_USER=social
     networks:

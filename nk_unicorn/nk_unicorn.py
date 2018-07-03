@@ -19,12 +19,13 @@ from sklearn.decomposition import PCA
 
 from keras.preprocessing import image
 from keras.applications.inception_v3 \
-    import decode_predictions, preprocess_input
+    import InceptionV3, decode_predictions, preprocess_input
 
 
 class Unicorn:
 
     def __init__(self):
+        self.model = InceptionV3(weights='imagenet', include_top=False)
         self.cnn_features = True
         self.target_size = (299, 299)
         self.alpha_fill = '#ffffff'
@@ -137,8 +138,7 @@ class Unicorn:
         ''' Returns features of images (defaults to inception V3:imagenet wts)
             from paths provided as a list
         '''
-        from keras.applications.inception_v3 import InceptionV3
-        self.model = InceptionV3(weights='imagenet', include_top=False)
+
         num_images = len(image_paths)
         feature_data = pd.DataFrame()
 
@@ -274,8 +274,6 @@ class Unicorn:
         if self.cnn_features:
             feature_data = self.get_net_features(image_paths)
 
-            feature_data.to_csv('mexico_profile_feature_data.csv')
-
             # # kmeans on imagenet activation
             # processed_feature_data = self.pca_image_features(feature_data)
             # result = self.run_kmeans(feature_data, processed_feature_data)
@@ -311,5 +309,4 @@ if __name__ == '__main__':
     # confirm sample_data grabs valid image paths when testing:
     sample_data = [(os.getcwd() + '/images/' + i) for i in os.listdir('images')]
     result = unicorn.cluster_images(sample_data)
-    result.to_csv('test.csv')
     print(result)
