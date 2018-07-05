@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import time
+import sys
 
 from flask import Flask, request, render_template
 from json import dumps, loads
@@ -7,7 +8,6 @@ from json import dumps, loads
 import pandas as pd
 from keras.applications.inception_v3 import InceptionV3
 from nk_unicorn import *
-from utils import *
 
 
 class UnicornRestListener():
@@ -20,18 +20,25 @@ class UnicornRestListener():
     def __init__(self):
         self.unicorn = Unicorn()
         self.unicorn.model = InceptionV3(weights='imagenet', include_top=False)
+        self.cluster_cutoff = 2
+
+    def cluster_stats(self, cluster_data):
+        ''' produce some stats about the cluster outcome
+        '''
+        key_clusters_df = pd.concat(
+            g for _, g in cluster_data.groupby('pred_class')
+            if len(g) >= self.cluster_cutoff
+        )
+
+        return key_clusters_df
 
     def find_clusters(self, image_paths):
-        """ analyze a given image and return text and detected objects
-        """
-        start = time.time()
+        ''' analyze a given image and return text and detected objects
+        '''
 
         unicorn_result = self.unicorn.cluster_images(image_paths)
 
-        print(
-            "The whole script took %f seconds to execute"
-            % (time.time() - start))
-        return unicorn_result.to_json()
+        return unicorn_result
 
 
 # Init UNICORN Class def'd above
@@ -59,8 +66,7 @@ def index():
     return render_template('index.html')
 
 # to have a nice web demo we need code here to take a list of
-# paths POSTed as a string
-
+# paths POSTed as a string and clean it up
 # @app.route("/demo-fileupload", methods=['POST'])
 # # @requires_auth
 # def demo_cluster_uploaded_images():
@@ -92,37 +98,8 @@ def test_cluster_uploaded_images():
 
     image_paths = loads(request.get_json())['image_paths']
 
-    result = listener.find_clusters(image_paths)
+    result, processed_feature_data = listener.find_clusters(image_paths)
 
-    return app.response_class(result, content_type='application/json')
+    new_data = listener.cluster_stats(result)
 
-
-@app.route("/fileupload", methods=['POST'])
-# @requires_auth
-def cluster_uploaded_images():
-    ''' **Route for using UNICOR as a http/web service**
-        Listen for an image url being POSTed on root.
-    '''
-
-    test_query = '''
-        select
-            l.url
-        from social.links l
-        join social.posts_links pl on pl.link_id=l.link_id
-        join social.posts p on pl.post_id=p.post_id
-        join social.communities_posts cp on cp.post_id=p.post_id
-            and cp.community_slug='col_b'
-            where l.type='image';
-    '''
-
-    db_connection = connect(seed=True)
-
-    query_result = execute_query(db_connection, test_query)
-
-    print(query_result)
-
-    # image_paths = loads(request.get_json())['image_paths']
-
-    # result = listener.find_clusters(image_paths)
-
-    # return app.response_class(result, content_type='application/json')
+    return app.response_class(new_data.to_json(), content_type='application/json')
