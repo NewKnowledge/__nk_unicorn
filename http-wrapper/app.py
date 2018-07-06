@@ -6,6 +6,7 @@ from flask import Flask, request, render_template
 from json import dumps, loads
 
 import pandas as pd
+import numpy as np
 from keras.applications.inception_v3 import InceptionV3
 from nk_unicorn import *
 
@@ -30,7 +31,18 @@ class UnicornRestListener():
             if len(g) >= self.cluster_cutoff
         )
 
-        return key_clusters_df
+        cluster_stats_df = pd.DataFrame()
+
+        for i in key_clusters_df['pred_class'].unique():
+            temp_data = key_clusters_df[key_clusters_df['pred_class'] == i]
+
+            cluster_stats_df = cluster_stats_df.append(
+                {'cluster_size': len(temp_data),
+                 'mean_variance': np.mean(temp_data.iloc[:, 2:].var(axis=1))
+                 }, ignore_index=True
+            )
+
+        return cluster_stats_df
 
     def find_clusters(self, image_paths):
         ''' analyze a given image and return text and detected objects
@@ -100,6 +112,10 @@ def test_cluster_uploaded_images():
 
     result, processed_feature_data = listener.find_clusters(image_paths)
 
-    new_data = listener.cluster_stats(result)
+    cluster_stats_df = listener.cluster_stats(
+        result.join(processed_feature_data)
+    )
 
-    return app.response_class(new_data.to_json(), content_type='application/json')
+    return app.response_class(
+        cluster_stats_df.to_json(),
+        content_type='application/json')
