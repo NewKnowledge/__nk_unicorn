@@ -9,7 +9,6 @@ import requests
 import numpy as np
 import pandas as pd
 
-# from scipy.fftpack import fft
 # from sklearn.cluster import KMeans
 # from sklearn.neighbors import NearestNeighbors
 from sklearn.cluster import DBSCAN
@@ -26,11 +25,10 @@ class Unicorn:
 
     def __init__(self):
         self.model = InceptionV3(weights='imagenet', include_top=False)
-        self.cnn_features = True
         self.target_size = (299, 299)
         self.alpha_fill = '#ffffff'
         self.prep_func = preprocess_input
-        self.scale_features = True
+        self.pca_dim_redux = True
         self.n_clusters = 4
         self.n_pca_comps = 5
 
@@ -87,53 +85,6 @@ class Unicorn:
         background.paste(image, image.split()[-1])
         return background
 
-    def fft_images(self, image_paths):
-        ''' Returns the fft transform of images from paths provided as a list
-        '''
-        num_images = len(image_paths)
-        feature_data = pd.DataFrame()
-
-        for i, image_path in enumerate(image_paths):
-
-            try:
-                if self.validate_url(image_path):
-                    filename = 'target_img.jpg'
-                    self.load_image_from_web(image_path)
-                else:
-                    filename = image_path
-
-                if i % 10 == 0:
-                    print('processing image {}/{}'.format(i + 1, num_images))
-                X = np.array([self.load_image(filename)])
-
-                # # # flatten and apply fft
-                image_features = fft(X.flatten())
-
-                if filename == 'target_img.jpg':
-                    os.remove('target_img.jpg')
-
-                feature_data = feature_data.append(
-                    pd.Series(image_features),
-                    ignore_index=True)
-
-                # feature_data = feature_data.append(
-                #     pd.Series(image_features.flatten()),
-                #     ignore_index=True)
-
-            except Exception as e:
-                print(e)
-                feature_data = feature_data.append(
-                    pd.Series([np.nan]),
-                    ignore_index=True)
-
-        feature_data = feature_data.set_index(
-            pd.Series(
-                [i.split('/')[-1] for i in image_paths]
-            )
-        )
-
-        return feature_data
-
     def get_net_features(self, image_paths):
         ''' Returns features of images (defaults to inception V3:imagenet wts)
             from paths provided as a list
@@ -182,7 +133,7 @@ class Unicorn:
         return feature_data
 
     def haar_wavelet_features(self, feature_data):
-        ''' takes feature data and performs haar wavelet
+        ''' takes image data and performs haar wavelet
             transformation.
         '''
         pass
@@ -191,11 +142,10 @@ class Unicorn:
         ''' Runs PCA on images in dataframe where rows are images
             and columns are features.
         '''
-        if self.scale_features:
-            # # # standardize features? eg for PCA
-            feature_data = pd.DataFrame(
-                data=StandardScaler().fit_transform(feature_data)
-            )
+        # # # standardize features
+        feature_data = pd.DataFrame(
+            data=StandardScaler().fit_transform(feature_data)
+        )
 
         # # # apply PCA feature matrix
         pca = PCA(n_components=self.n_pca_comps)
@@ -241,7 +191,7 @@ class Unicorn:
 
     def run_dbscan(self, feature_data, target_data):
 
-        dbscn = DBSCAN(eps=100, min_samples=1).fit(target_data)
+        dbscn = DBSCAN(eps=35, min_samples=1).fit(target_data)
 
         output_data = pd.concat(
             {'label': pd.Series(feature_data.index),
@@ -270,43 +220,37 @@ class Unicorn:
 
     def cluster_images(self, image_paths):
 
-        # Use CNN-generated features
-        if self.cnn_features:
-            feature_data = self.get_net_features(image_paths)
+        # get CNN-generated features
+        feature_data = self.get_net_features(image_paths)
 
-            # # kmeans on imagenet activation
-            # processed_feature_data = self.pca_image_features(feature_data)
-            # result = self.run_kmeans(feature_data, processed_feature_data)
-
-            # DBSCAN on imagenet activation
+        # Use PCA on the imagenet activation for dim reduction?
+        if self.pca_dim_redux:
             processed_feature_data = self.pca_image_features(feature_data)
-            result = self.run_dbscan(feature_data, processed_feature_data)
 
-            # # kmeans on pairwise distance
-            # pwise_dist_df = self.calc_distance(feature_data)
-            # result = self.run_kmeans(feature_data, pwise_dist_df)
-
-            # knn on image features
-            # result = self.run_knn(feature_data)
-
-        # Use fast fourier transform
         else:
-            feature_data = self.fft_images(image_paths)
-            processed_feature_data = self.pca_image_features(feature_data)
+            processed_feature_data = feature_data
 
-            result = self.run_kmeans(feature_data, processed_feature_data)
+        # # kmeans
+        # result = self.run_kmeans(feature_data, processed_feature_data)
 
-        return result
+        # DBSCAN
+        result = self.run_dbscan(feature_data, processed_feature_data)
+
+        # # kmeans on pairwise distance
+        # pwise_dist_df = self.calc_distance(feature_data)
+        # result = self.run_kmeans(feature_data, pwise_dist_df)
+
+        # knn on image features
+        # result = self.run_knn(feature_data)
+
+        return result, processed_feature_data
 
 
 if __name__ == '__main__':
     unicorn = Unicorn()
 
-    # # # use fourier transform
-    # unicorn.cnn_features = False
-    # unicorn.scale_features = False
-
     # confirm sample_data grabs valid image paths when testing:
     sample_data = [(os.getcwd() + '/images/' + i) for i in os.listdir('images')]
-    result = unicorn.cluster_images(sample_data)
+    result, processed_feature_data = unicorn.cluster_images(sample_data)
+    print(processed_feature_data)
     print(result)

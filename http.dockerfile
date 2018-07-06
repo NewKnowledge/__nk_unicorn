@@ -37,6 +37,8 @@ ENV LC_ALL=C.UTF-8 \
 RUN pip3 install -e /app
 RUN pip3 install -r /app/http-wrapper/requirements.txt
 
+RUN python3 /app/http-wrapper/get_arch.py
+
 ENV FLASK_APP=/app/http-wrapper/app.py
 
 CMD ["python3", "-m", "flask", "run", "--host", "0.0.0.0", "--port", "5000"]
