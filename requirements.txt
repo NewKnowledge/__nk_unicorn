@@ -1,0 +1,12 @@
+flask
+markdown
+requests
+retrying
+tensorflow
+Keras
+numpy
+pandas
+Pillow
+PyWavelets
+scipy
+scikit-learn
