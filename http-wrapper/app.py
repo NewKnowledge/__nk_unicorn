@@ -38,7 +38,7 @@ class UnicornRestListener():
 
             cluster_stats_df = cluster_stats_df.append(
                 {'cluster_size': len(temp_data),
-                 'mean_variance': np.mean(temp_data.iloc[:, 2:].var(axis=1))
+                 'mean_variance': np.mean(temp_data.iloc[:, 2:].var(axis=0))
                  }, ignore_index=True
             )
 
