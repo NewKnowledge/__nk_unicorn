@@ -1,13 +1,16 @@
 ''' Flask app for unicorn clustering service '''
 
+import json
 import markdown
 import pandas as pd
 import numpy as np
 from flask import Flask, Markup, jsonify, render_template, request
 
-from http_utils import to_date_string
+from http_utils import to_date_string, PandasEncoder
 from nk_unicorn import ImagenetModel, Unicorn
 from queries import get_community_image_urls, get_community_names
+import sys
+
 
 unicorn = Unicorn()
 image_net = ImagenetModel()
@@ -38,16 +41,21 @@ def req_visual_clusters(community_name):
     stop_time = request.args.get('stop_time', to_date_string(pd.datetime.now()))
     start_time = request.args.get('start_time', to_date_string(pd.datetime.now() - pd.Timedelta('2d')))
 
-    print('getting list of urls for given community')
+    print('getting list of urls for given community', file=sys.stderr)
     image_urls = get_community_image_urls(community_name, start_time, stop_time)
-    print('community image urls:', image_urls)
+    assert len(set(image_urls)) == len(image_urls)
+    print('community image urls:', image_urls, file=sys.stderr)
 
     data = image_net.get_features_from_urls(image_urls)
 
-    print('clustering')
-    result = unicorn.cluster(data)
-    print('clustering result:', result)
-    return jsonify(result)
+    print('clustering', file=sys.stderr)
+    clusters = unicorn.cluster(data)
+
+    urls_by_label = pd.DataFrame([dict(url=url, label=label) for url, label in zip(image_urls, clusters)])
+    print('urls by label df:', urls_by_label, file=sys.stderr)
+    urls_by_label = {label: df['url'].values for label, df in urls_by_label.groupby('label', as_index=False)}
+
+    return json.dumps(urls_by_label, cls=PandasEncoder)
 
 
 if __name__ == "__main__":

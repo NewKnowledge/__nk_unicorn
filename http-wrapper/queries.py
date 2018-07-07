@@ -12,7 +12,7 @@ def get_community_names():
 def get_community_image_urls(comm_name, start_time, stop_time):
     # TODO assert timestamps are strings
     connection = get_connection(db_config['social'])
-    query = text('''select l.url
+    query = text('''select distinct l.url
         from social.links l
         join social.posts_links pl on pl.link_id=l.link_id
         join social.posts p on pl.post_id=p.post_id

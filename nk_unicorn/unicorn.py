@@ -5,6 +5,7 @@ from keras.applications import inception_v3
 from sklearn.cluster import DBSCAN
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
+import sys
 
 from .image_utils import image_array_from_path, image_array_from_url
 
@@ -31,7 +32,7 @@ class ImagenetModel:
     def get_features(self, images_array):
         ''' takes a batch of images as a 4-d array and returns the (flattened) imagenet features for those images as a 2-d array '''
         # NOTE we want to do preprocessing and predicting in batches whenever possible
-        print('image array shape:', images_array.shape)
+        print('image array shape:', images_array.shape, file=sys.stderr)
         assert images_array.ndim == 4
         images_array = self.preprocess(images_array)
         image_features = self.model.predict(images_array)
