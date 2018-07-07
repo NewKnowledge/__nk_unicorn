@@ -1,18 +1,19 @@
 FROM python:3.6-slim
 
-ENV HOME=/app NAME=nk_unicorn
+ENV HOME=/app 
 
 WORKDIR $HOME
 
-COPY requirements.txt $HOME/
+COPY http-wrapper/requirements.txt $HOME/http-wrapper/
+RUN pip install --upgrade pip \
+    && pip install -r $HOME/http-wrapper/requirements.txt
 
-RUN pip3 install --upgrade pip \
-    && pip3 install -r requirements.txt 
-# pip3 install -e 
+# force dockerfile to download InceptionV3 imagenet weights (.h5) into the image to avoid download on spin-up or first use
+RUN python -c "from keras.applications.inception_v3 import InceptionV3; InceptionV3(weights='imagenet', include_top=False)"
 
 COPY . $HOME/
+RUN pip install -e .
+
 
 ENV FLASK_APP=$HOME/http-wrapper/app.py
 CMD ["flask", "run", "--host=0.0.0.0"]
-
-# CMD ["python3", "-m", "flask", "run", "--host", "0.0.0.0", "--port", "5000"]

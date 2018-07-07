@@ -9,10 +9,11 @@ node {
         println commit_id
     
         stage "build_docker_image"
-        def http_image = docker.build("ds/unicorn-http", "-f http.dockerfile .")
+        def http_image_gpu = docker.build("ds/unicorn-http-gpu", "-f http.gpu.dockerfile .")
+        def http_image_slim = docker.build("ds/unicorn-http-slim", "-f http.slim.dockerfile .")
     
         stage "publish_docker_image"
-        def images = [http_image]
+        def images = [http_image_slim, http_image_gpu]
         def branches = sh(returnStdout: true, script: "git branch --contains ${commit_id}")
         for (image in images) {
             image.push "${BRANCH_NAME}"
