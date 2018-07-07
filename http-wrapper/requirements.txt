@@ -5,7 +5,7 @@ markdown
 numpy 
 pandas 
 Pillow
-psycopg2
+psycopg2-binary
 requests
 retrying
 scikit-learn
