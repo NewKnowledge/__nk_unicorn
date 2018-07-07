@@ -1,0 +1,15 @@
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+
+<div class="mainbody">
+
+	<h1> Hello there! </h1>
+
+	<h2> Provide a list of image paths below to assign the images to similarity-based groups. </h2>
+
+	<form action="{{ url_for('demo_cluster_uploaded_images') }}" method="post">
+		<input type="text" name="image_paths" class=urlentry>
+		<input type="submit" class=urlentrybutton>
+
+	</form>
+
+</div>
