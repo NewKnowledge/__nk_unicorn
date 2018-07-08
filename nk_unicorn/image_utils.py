@@ -7,6 +7,7 @@ import requests
 from cachetools.func import ttl_cache
 from keras.preprocessing.image import img_to_array, load_img
 from PIL import Image
+import numpy as np
 
 CACHE_TTL = os.getenv('CACHE_TTL', 3600)
 
@@ -22,8 +23,11 @@ def image_array_from_path(fpath, target_size=(299, 299)):
 
 @ttl_cache(ttl=CACHE_TTL)
 def image_array_from_url(url, target_size=(299, 299)):
-    img = load_image_url(url, target_size=target_size)
-    return img_to_array(img)
+    try:
+        img = load_image_url(url, target_size=target_size)
+        return img_to_array(img)
+    except Exception as err:
+        print('\n\nerror reading url:\n', err)
 
 
 def strip_alpha_channel(image):

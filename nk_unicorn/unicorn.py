@@ -25,15 +25,22 @@ class ImagenetModel:
         return self.get_features(images_array)
 
     def get_features_from_urls(self, image_urls):
-        ''' takes a list of image urls and returns the features resulting from applying the imagenet model to those images '''
-        images_array = np.array([image_array_from_url(url, target_size=self.target_size) for url in image_urls])
-        return self.get_features(images_array)
+        ''' takes a list of image urls and returns the features resulting from applying the imagenet model to 
+        successfully downloaded images along with the urls that were successful.
+        '''
+        images_array = [image_array_from_url(url, target_size=self.target_size) for url in image_urls]
+        # filter out unsuccessful image urls
+        url_to_image = {url: img for url, img in zip(image_urls, images_array) if img is not None}
+        images_array = np.array([img_arr for img_arr in url_to_image.values()])
+        features = self.get_features(images_array)
+        return features, url_to_image.keys()
 
     def get_features(self, images_array):
         ''' takes a batch of images as a 4-d array and returns the (flattened) imagenet features for those images as a 2-d array '''
         # NOTE we want to do preprocessing and predicting in batches whenever possible
         print('image array shape:', images_array.shape, file=sys.stderr)
-        assert images_array.ndim == 4
+        if images_array.ndim != 4:
+            raise Exception('invalid input shape for images_array, expects a 4d array')
         images_array = self.preprocess(images_array)
         image_features = self.model.predict(images_array)
 

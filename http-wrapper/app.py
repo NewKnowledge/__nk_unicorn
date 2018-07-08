@@ -37,23 +37,41 @@ def req_community_names():
 
 @app.route('/visual-clusters/<community_name>')
 def req_visual_clusters(community_name):
+    # localhost:5000/visual-clusters/world-cup?start_time=2018-07-06_18:00:00
 
     stop_time = request.args.get('stop_time', to_date_string(pd.datetime.now()))
     start_time = request.args.get('start_time', to_date_string(pd.datetime.now() - pd.Timedelta('2d')))
+    image_limit = request.args.get('image_limit', None)
 
-    print('getting list of urls for given community', file=sys.stderr)
+    print('getting list of urls for community named', community_name,
+          'from', start_time, 'to', stop_time, file=sys.stderr)
+
     image_urls = get_community_image_urls(community_name, start_time, stop_time)
-    assert len(set(image_urls)) == len(image_urls)
-    print('community image urls:', image_urls, file=sys.stderr)
 
-    data = image_net.get_features_from_urls(image_urls)
+    if not image_urls:
+        return f'No images found in {community_name} community between {start_time} and {stop_time}'
 
-    print('clustering', file=sys.stderr)
-    clusters = unicorn.cluster(data)
+    if image_limit:
+        # pick a random `image_limit` images to use for clustering
+        inds = np.random.permutation(len(image_urls))[:image_limit]
+        image_urls = image_urls[inds]
 
+    # print('community image urls:', image_urls, file=sys.stderr)
+    print('len of results of community image url query:', len(image_urls), file=sys.stderr)
+    # NOTE that image_urls returned here may be shorter than input if some urls failed
+    array_data, image_urls = image_net.get_features_from_urls(image_urls)
+    print('new community image urls len:', len(image_urls), file=sys.stderr)
+
+    assert array_data.shape[0] == len(image_urls)
+
+    print('clustering image array of shape', array_data.shape, file=sys.stderr)
+    clusters = unicorn.cluster(array_data)
+
+    # TODO option to return dataframe
     urls_by_label = pd.DataFrame([dict(url=url, label=label) for url, label in zip(image_urls, clusters)])
-    print('urls by label df:', urls_by_label, file=sys.stderr)
     urls_by_label = {label: df['url'].values for label, df in urls_by_label.groupby('label', as_index=False)}
+
+    # print('urls by label:', urls_by_label, file=sys.stderr)
 
     return json.dumps(urls_by_label, cls=PandasEncoder)
 
