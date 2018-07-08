@@ -1,16 +1,16 @@
 ''' Flask app for unicorn clustering service '''
 
 import json
-import markdown
-import pandas as pd
-import numpy as np
-from flask import Flask, Markup, jsonify, render_template, request
-
-from http_utils import to_date_string, PandasEncoder
-from nk_unicorn import ImagenetModel, Unicorn
-from queries import get_community_image_urls, get_community_names
 import sys
 
+import markdown
+import numpy as np
+import pandas as pd
+from flask import Flask, Markup, jsonify, render_template, request
+
+from http_utils import PandasEncoder, to_date_string
+from nk_unicorn import ImagenetModel, Unicorn
+from queries import get_community_image_urls, get_community_names
 
 unicorn = Unicorn()
 image_net = ImagenetModel()
@@ -72,7 +72,6 @@ def req_visual_clusters(community_name):
     urls_by_label = {label: df['url'].values for label, df in urls_by_label.groupby('label', as_index=False)}
 
     # print('urls by label:', urls_by_label, file=sys.stderr)
-
     return json.dumps(urls_by_label, cls=PandasEncoder)
 
 

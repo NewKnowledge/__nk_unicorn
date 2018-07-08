@@ -9,10 +9,12 @@ from db_utils import get_connection
 CACHE_TTL = os.getenv('CACHE_TTL', 3600)
 
 
-def insert_clusters():
-    connection = get_connection(db_config['social'])
-    query = 'select distinct cp.community_name from social.communities_posts cp'
-    return [res[0] for res in connection.execute(query)]
+def insert_clusters(community_name, cluster_labels):
+    connection = get_connection(db_config['cluster'])
+    # query = ''
+    # return [res[0] for res in connection.execute(query)]
+    # INSERT INTO image_clusters.cluster_labels (image_url, community_id, cluster_label) \
+    #                 VALUES' + ', '.join(values) + ';'
 
 
 @ttl_cache(ttl=CACHE_TTL)

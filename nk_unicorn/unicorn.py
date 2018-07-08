@@ -1,11 +1,12 @@
 ''' Classes for performing image clustering '''
 
+import sys
+
 import numpy as np
 from keras.applications import inception_v3
 from sklearn.cluster import DBSCAN
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
-import sys
 
 from .image_utils import image_array_from_path, image_array_from_url
 
@@ -29,11 +30,11 @@ class ImagenetModel:
         successfully downloaded images along with the urls that were successful.
         '''
         images_array = [image_array_from_url(url, target_size=self.target_size) for url in image_urls]
-        # filter out unsuccessful image urls
+        # filter out unsuccessful image urls which output None in the list of
         url_to_image = {url: img for url, img in zip(image_urls, images_array) if img is not None}
-        images_array = np.array([img_arr for img_arr in url_to_image.values()])
+        images_array = np.array(list(url_to_image.values()))
         features = self.get_features(images_array)
-        return features, url_to_image.keys()
+        return features, list(url_to_image.keys())
 
     def get_features(self, images_array):
         ''' takes a batch of images as a 4-d array and returns the (flattened) imagenet features for those images as a 2-d array '''
@@ -71,6 +72,8 @@ class Unicorn:
     def cluster(self, data):
         data = self.reduce_dimension(data)
         return self.cluster_alg.fit_predict(data)
+
+    # TODO incorporate below:
 
     # def calc_distance(self, data):
     #     ''' Calculate pairwise feature distance between images in a dataframe
