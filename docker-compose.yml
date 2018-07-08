@@ -9,13 +9,10 @@ services:
     build:
       context: .
       dockerfile: http.slim.dockerfile
-    
     command: ["flask", "run", "--host=0.0.0.0"]
-    depends_on:
-      - cluster-db
-      - social-db
-    env_file:
-      - unicorn.env
+    # depends_on:
+    #   - cluster-db
+      # - social-db
     environment:
       - FLASK_ENV=development
     ports: 
@@ -24,17 +21,19 @@ services:
       - backend
     volumes:
       - .:/app
+    env_file:
+      - unicorn.env
 
-  cluster-db:
-    image: newknowledge.azurecr.io/ds/cluster-db-dev:seed-latest
-    environment:
-      - POSTGRES_USER=cluster
-    networks:
-      - backend
+  # cluster-db:
+  #   image: newknowledge.azurecr.io/ds/cluster-db-dev:seed-latest
+  #   environment:
+  #     - POSTGRES_USER=cluster
+  #   networks:
+  #     - backend
 
-  social-db:
-    image: newknowledge.azurecr.io/ds/social-db-dev:seed-dev
-    environment:
-      - POSTGRES_USER=social
-    networks:
-      - backend
+  # social-db:
+  #   image: newknowledge.azurecr.io/ds/social-db-dev:seed-dev
+  #   environment:
+  #     - POSTGRES_USER=social
+  #   networks:
+  #     - backend
