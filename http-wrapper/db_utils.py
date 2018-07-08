@@ -4,22 +4,6 @@ from retrying import retry
 from config import (CLUSTER_DB_HOST, CLUSTER_DB_NAME, CLUSTER_DB_USER, CLUSTER_DB_PASS,
                     SOCIAL_DB_HOST, SOCIAL_DB_NAME, SOCIAL_DB_USER, SOCIAL_DB_PASS)
 
-db_config = {
-    'cluster': {
-        'host': CLUSTER_DB_HOST,
-        'db_name': CLUSTER_DB_NAME,
-        'user': CLUSTER_DB_USER,
-        'password': CLUSTER_DB_PASS
-    },
-    'social': {
-        'host': SOCIAL_DB_HOST,
-        'db_name': SOCIAL_DB_NAME,
-        'user': SOCIAL_DB_USER,
-        'password': SOCIAL_DB_PASS
-    }
-}
-
-
 ENGINES = {}
 CONNECTIONS = {}
 METADATA = {}

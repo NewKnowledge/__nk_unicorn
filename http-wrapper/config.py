@@ -12,7 +12,7 @@ CLUSTER_DB_PASS = os.getenv('CLUSTER_DB_PASS', '')
 
 CACHE_TTL = os.getenv('CACHE_TTL', 3600)  # time to live for cache in seconds
 
-db_config = {
+DB_CONFIG = {
     'cluster': {
         'host': CLUSTER_DB_HOST,
         'db_name': CLUSTER_DB_NAME,

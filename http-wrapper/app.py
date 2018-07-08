@@ -10,7 +10,7 @@ from flask import Flask, Markup, jsonify, render_template, request
 
 from http_utils import PandasEncoder, to_date_string
 from nk_unicorn import ImagenetModel, Unicorn
-from queries import get_community_image_urls, get_community_names
+from queries import get_community_image_urls, get_community_names, remove_community_clusters, insert_clusters
 
 unicorn = Unicorn()
 image_net = ImagenetModel()
@@ -65,14 +65,20 @@ def req_visual_clusters(community_name):
     assert array_data.shape[0] == len(image_urls)
 
     print('clustering image array of shape', array_data.shape, file=sys.stderr)
-    clusters = unicorn.cluster(array_data)
+    labels = unicorn.cluster(array_data)
 
     # TODO option to return dataframe
-    urls_by_label = pd.DataFrame([dict(url=url, label=label) for url, label in zip(image_urls, clusters)])
-    urls_by_label = {label: df['url'].values for label, df in urls_by_label.groupby('label', as_index=False)}
+    urls_by_label = pd.DataFrame([dict(url=url, label=label) for url, label in zip(image_urls, labels)])
+    urls_by_label = {label: df['url'].values for label, df in urls_by_label.groupby('label')}
+
+    removed = remove_community_clusters(community_name)
+    print('result from removing community cluster labels:', removed, file=sys.stderr)
+
+    insert_clusters(community_name, image_urls, labels)
+    print('insert successful', file=sys.stderr)
 
     # print('urls by label:', urls_by_label, file=sys.stderr)
-    return json.dumps(urls_by_label, cls=PandasEncoder)
+    return jsonify(json.loads(json.dumps(urls_by_label, cls=PandasEncoder)))
 
 
 if __name__ == "__main__":
