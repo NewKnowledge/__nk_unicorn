@@ -13,6 +13,8 @@ from .image_utils import image_array_from_path, image_array_from_url
 
 class ImagenetModel:
 
+    ''' A class for featurizing images using pre-trained neural nets '''
+
     def __init__(self, target_size=(299, 299)):
         # TODO allow for other keras imagenet models
         self.model = inception_v3.InceptionV3(weights='imagenet', include_top=False)
@@ -132,25 +134,6 @@ class Unicorn:
     #     ).sort_values('distances')
 
     #     return output_data
-
-    # def cluster_images(self, image_paths):
-
-    #     # get CNN-generated features
-    #     feature_data = self.get_net_features(image_paths)
-
-    #     print('feature data:', feature_data)
-    #     # Use PCA on the imagenet activation for dim reduction?
-    #     if self.pca_dim_redux:
-    #         processed_feature_data = self.pca_image_features(feature_data)
-
-    #     else:
-    #         processed_feature_data = feature_data
-
-    #     # # kmeans
-    #     # result = self.run_kmeans(feature_data, processed_feature_data)
-
-    #     # DBSCAN
-    #     result = self.run_dbscan(feature_data, processed_feature_data)
 
     # # kmeans on pairwise distance
     # pwise_dist_df = self.calc_distance(feature_data)

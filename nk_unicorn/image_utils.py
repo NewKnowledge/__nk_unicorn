@@ -1,4 +1,4 @@
-''' Utility functions for image processing designed for use with keras networks, including cached path or url to array functions '''
+''' Utility functions for image processing designed for use with keras networks, including (path or url) -> array functions and caching '''
 import io
 import os
 import re

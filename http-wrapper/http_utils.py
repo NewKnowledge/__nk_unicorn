@@ -8,6 +8,10 @@ import pandas as pd
 TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 
+def log(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
+
+
 def parse_date_string(date_string):
     try:
         date_string = date_string.replace('T', ' ')
