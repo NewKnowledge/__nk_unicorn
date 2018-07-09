@@ -1,6 +1,9 @@
 ''' Utility functions for parsing dates, json, etc. '''
 import json
 from datetime import datetime, timedelta
+from flask import Response
+import sys
+from config import API_PASSWORD
 
 import numpy as np
 import pandas as pd
@@ -44,3 +47,28 @@ class PandasEncoder(json.JSONEncoder):
         if isinstance(obj, np.ndarray):
             return NumpyEncoder.default(self, obj)
         return json.JSONEncoder.default(self, obj)
+
+
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth = request.authorization
+        if not auth or not check_auth(auth.username, auth.password):
+            return authenticate()
+        return f(*args, **kwargs)
+    return decorated
+
+
+def check_auth(username, password):
+    """This function is called to check if a username /
+    password combination is valid.
+    """
+    return username == 'admin' and password == API_PASSWORD
+
+
+def authenticate():
+    """Sends a 401 response that enables basic auth"""
+    return Response(
+        'Could not verify your access level for that URL.\n'
+        'You have to login with proper credentials', 401,
+        {'WWW-Authenticate': 'Basic realm="Login Required"'})

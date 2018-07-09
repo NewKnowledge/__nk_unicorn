@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 from flask import Flask, Markup, jsonify, render_template, request
 
-from http_utils import PandasEncoder, to_date_string
+from http_utils import PandasEncoder, to_date_string, requires_auth, log
 from nk_unicorn import ImagenetModel, Unicorn
 from queries import get_community_image_urls, get_community_names, remove_community_clusters, insert_clusters
 
@@ -31,11 +31,13 @@ def homepage():
 
 
 @app.route('/community-names')
+@requires_auth
 def req_community_names():
     return jsonify(get_community_names())
 
 
 @app.route('/visual-clusters/<community_name>')
+@requires_auth
 def req_visual_clusters(community_name):
     # localhost:5000/visual-clusters/world-cup?start_time=2018-07-06_18:00:00
 
