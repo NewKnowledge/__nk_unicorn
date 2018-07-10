@@ -10,7 +10,7 @@ CLUSTER_DB_NAME = os.getenv('CLUSTER_DB_NAME', 'cluster')
 CLUSTER_DB_USER = os.getenv('CLUSTER_DB_USER', 'cluster')
 CLUSTER_DB_PASS = os.getenv('CLUSTER_DB_PASS', '')
 
-API_PASSWORD = os.getenv('API_PASSWORD')
+API_PASSWORD = os.getenv('API_PASSWORD', 'pizza')
 
 CACHE_TTL = os.getenv('CACHE_TTL', 3600)  # time to live for cache in seconds
 
