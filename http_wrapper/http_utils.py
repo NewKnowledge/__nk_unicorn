@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 from flask import Response, request
 
-from config import API_PASSWORD
+from .config import API_PASSWORD
 
 TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 

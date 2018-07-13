@@ -1,8 +1,10 @@
 ''' Utility functions for interfacing with the postgres databases social-db and cluster-db '''
-from sqlalchemy import create_engine, MetaData, Table
 from retrying import retry
-from config import (CLUSTER_DB_HOST, CLUSTER_DB_NAME, CLUSTER_DB_USER, CLUSTER_DB_PASS,
-                    SOCIAL_DB_HOST, SOCIAL_DB_NAME, SOCIAL_DB_USER, SOCIAL_DB_PASS)
+from sqlalchemy import MetaData, Table, create_engine
+
+from .config import (CLUSTER_DB_HOST, CLUSTER_DB_NAME, CLUSTER_DB_PASS,
+                     CLUSTER_DB_USER, SOCIAL_DB_HOST, SOCIAL_DB_NAME,
+                     SOCIAL_DB_PASS, SOCIAL_DB_USER)
 
 ENGINES = {}
 CONNECTIONS = {}
