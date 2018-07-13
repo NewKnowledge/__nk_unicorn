@@ -41,7 +41,6 @@ class ImagenetModel:
     def get_features(self, images_array):
         ''' takes a batch of images as a 4-d array and returns the (flattened) imagenet features for those images as a 2-d array '''
         # NOTE we want to do preprocessing and predicting in batches whenever possible
-        print('image array shape:', images_array.shape, file=sys.stderr)
         if images_array.ndim != 4:
             raise Exception('invalid input shape for images_array, expects a 4d array')
         images_array = self.preprocess(images_array)

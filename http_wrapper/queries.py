@@ -65,8 +65,8 @@ def get_community_image_urls(community_name, start_time, stop_time, image_limit=
         where l.type='image' 
         and cp.community_name = :community_name
         and p.published_at >= :start_time 
-        and p.published_at <= :stop_time;
-        {limit_statement}
+        and p.published_at <= :stop_time
+        {limit_statement};
         ''')
     return [res[0] for res in connection.execute(query, **query_params)]
 
@@ -85,17 +85,13 @@ def get_visual_clusters(community_name, start_time, stop_time, image_limit=None)
     # NOTE that image_urls returned here may be shorter than input if some urls failed
     num_urls = len(image_urls)
     array_data, image_urls = image_net.get_features_from_urls(image_urls)
-    num_dropped = len(image_urls) - num_urls
+    num_dropped = num_urls - len(image_urls)
     if num_dropped > 0:
-        log('unable to retreive', num_dropped, 'urls out of', num_urls)
+        print('unable to retreive', num_dropped, 'urls out of', num_urls)
 
     assert array_data.shape[0] == len(image_urls)
 
-    log('clustering image array of shape', array_data.shape)
     labels = unicorn.cluster(array_data)
-
-    log('urls:', image_urls)
-    log('labels:', labels)
 
     return image_urls, labels
     # return {url: lbl for url, lbl in zip(image_urls, labels)}
