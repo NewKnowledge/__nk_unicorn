@@ -10,9 +10,7 @@ node {
         println commit_id
     
         stage "build_docker_image"
-        def batch_image = docker.build("ds/unicorn", ".")
-    
-        // def branches = sh(returnStdout: true, script: "git branch --contains ${commit_id}")  // not sure what this does, so im leaving it here
+        def batch_image = docker.build("ds/unicorn:${clean_branchname}", ".")
     
         stage "publish_docker_image"
         def images = [batch_image]
