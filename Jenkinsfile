@@ -2,7 +2,7 @@
 node {
     docker.withRegistry('https://newknowledge.azurecr.io', 'acr-creds') {
     
-        git url: "https://github.com/NewKnowledge/nk_unicorn.git", credentialsId: '055e98d5-ce0c-45ef-bf0d-ddc6ed9b634a', branch: "${BRANCH_NAME}"
+        git url: "https://github.com/NewKnowledge/unicorn.git", credentialsId: '055e98d5-ce0c-45ef-bf0d-ddc6ed9b634a', branch: "${BRANCH_NAME}"
     
         sh "git rev-parse HEAD > .git/commit-id"
         def commit_id = readFile('.git/commit-id').trim()
@@ -10,10 +10,10 @@ node {
         println commit_id
     
         stage "build_docker_image"
-        def http_image = docker.build("ds/unicorn-http:${clean_branchname}", "-f http.dockerfile .")
+        def batch_image = docker.build("ds/unicorn:${clean_branchname}", ".")
     
         stage "publish_docker_image"
-        def images = [http_image]
+        def images = [batch_image]
         for (image in images) {
             image.push "${clean_branchname}"
             image.push "${commit_id}"

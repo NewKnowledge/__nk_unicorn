@@ -5,30 +5,35 @@ networks:
 
 services:
 
-  nk_unicorn:
-    build:
-      context: .
-      dockerfile: http.dockerfile
+  unicorn:
+    build: .
+      # context: .
+      # dockerfile: Dockerfile
+    # command: ["flask", "run", "--host=0.0.0.0"]
     depends_on:
       - cluster-db
-      - social-db
-    env_file:
-      - .env
+      # - social-db
+    environment:
+      - IMAGE_LIMIT=1000
     ports: 
       - 5000:5000
     networks:
       - backend
+    volumes:
+      - .:/app
+    env_file:
+      - unicorn.env
 
   cluster-db:
-    image: newknowledge.azurecr.io/ds/cluster-db-dev:seed-latest
+    image: newknowledge.azurecr.io/ds/cluster-db-dev:seed-dev
     environment:
-      - POSTGRES_USER=cluster_db
+      - POSTGRES_USER=cluster
     networks:
       - backend
 
-  social-db:
-    image: newknowledge.azurecr.io/ds/social-db-dev:seed-communities
-    environment:
-      - POSTGRES_USER=social
-    networks:
-      - backend
+  # social-db:
+  #   image: newknowledge.azurecr.io/ds/social-db-dev:seed-dev
+  #   environment:
+  #     - POSTGRES_USER=social
+  #   networks:
+  #     - backend

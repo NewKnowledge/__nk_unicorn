@@ -8,6 +8,5 @@ venv
 Dockerfile
 *.dockerfile
 Jenkinsfile
-README.md
 include
 *.env
