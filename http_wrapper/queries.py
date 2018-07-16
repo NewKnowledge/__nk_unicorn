@@ -1,16 +1,13 @@
 import os
 
 import numpy as np
-from cachetools.func import ttl_cache
-from sqlalchemy import select, text
+from sqlalchemy import text
 
 from nk_unicorn import ImagenetModel, Unicorn
 
 from .config import DB_CONFIG
 from .db_utils import get_connection
 from .http_utils import log
-
-CACHE_TTL = os.getenv('CACHE_TTL', 3600)
 
 unicorn = Unicorn()
 image_net = ImagenetModel()
@@ -39,14 +36,12 @@ def remove_community_clusters(community_name):
     return [dict(res) for res in connection.execute(query, community_name=community_name)]
 
 
-@ttl_cache(ttl=CACHE_TTL)
 def get_community_names():
     connection = get_connection(DB_CONFIG['social'])
     query = text('select distinct cp.community_name from social.communities_posts cp')
     return [res[0] for res in connection.execute(query)]
 
 
-@ttl_cache(ttl=CACHE_TTL)
 def get_community_image_urls(community_name, start_time, stop_time, image_limit=None):
 
     query_params = dict(community_name=community_name, start_time=start_time, stop_time=stop_time)
@@ -71,7 +66,6 @@ def get_community_image_urls(community_name, start_time, stop_time, image_limit=
     return [res[0] for res in connection.execute(query, **query_params)]
 
 
-@ttl_cache(ttl=CACHE_TTL)
 def get_visual_clusters(community_name, start_time, stop_time, image_limit=None):
 
     assert isinstance(start_time, str) and isinstance(stop_time, str)
