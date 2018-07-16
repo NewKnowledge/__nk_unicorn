@@ -21,5 +21,38 @@ node {
                 image.push 'latest'
             }
         }
+
+        /* Kick off another job to use the newly registered images */
+        stage "Deploy on K8s"
+        // Branches to deploy
+        def buildableBranches = ["dev"]
+        if (!buildableBranches.contains(BRANCH_NAME)) {
+            currentBuild.result = 'ABORTED'
+            error('Stopping early: Branch built is not listed to deploy to k8s.')
+        }
+
+        // Different configs for different branches
+        def devMap  = [namespace: "quorum-dev", clusterId: "mario-monitor", releaseName: "unicorn-dev"]
+        def stgMap  = [namespace: "quorum-stg", clusterId: "mario-monitor", releaseName: "unicorn-stg"]
+        def prodMap  = [namespace: "quorum-prod", clusterId: "prod", releaseName: "unicorn-prod"]
+
+        // Select "active" map
+        def activeMap = [:]
+        if ("${BRANCH_NAME}" == "master") {
+            activeMap = prodMap
+        } else if ("${BRANCH_NAME}" == "stg") {
+            activeMap = stgMap
+        } else {
+            activeMap = devMap
+        }
+        // Run k8s job with config
+        build job: "deploy-k8", parameters: [
+            string(name: "imageTag", value: "${commit_id}"),
+            string(name: "chartName", value: "nk.cron-singleton"),
+            string(name: "valueFilename", value: "unicorn.yaml"),
+            string(name: "namespace", value: "${activeMap.namespace}"),
+            string(name: "clusterId", value: "${activeMap.clusterId}"),
+            string(name: "releaseName", value: "${activeMap.releaseName}")
+        ]
     }
 }
