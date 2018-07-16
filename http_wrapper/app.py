@@ -39,7 +39,7 @@ def req_visual_clusters(community_name):
 
     stop_time = request.args.get('stop_time', to_date_string(pd.datetime.now()))
     start_time = request.args.get('start_time', to_date_string(pd.datetime.now() - pd.Timedelta('4d')))
-    image_limit = request.args.get('image_limit', 8000)
+    image_limit = int(request.args.get('image_limit', 8000))
 
     log('getting list of urls for community named', community_name, 'from', start_time, 'to', stop_time)
 

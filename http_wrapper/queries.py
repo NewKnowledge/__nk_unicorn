@@ -71,13 +71,14 @@ def get_community_image_urls(community_name, start_time, stop_time, image_limit=
     return [res[0] for res in connection.execute(query, **query_params)]
 
 
+@ttl_cache(ttl=CACHE_TTL)
 def get_visual_clusters(community_name, start_time, stop_time, image_limit=None):
 
     assert isinstance(start_time, str) and isinstance(stop_time, str)
     image_urls = get_community_image_urls(community_name, start_time, stop_time, image_limit=image_limit)
 
     if image_limit:
-        assert len(image_urls) <= image_limit
+        assert len(image_urls) <= int(image_limit)
 
     if not image_urls:
         return f'No images found in {community_name} community between {start_time} and {stop_time}'
