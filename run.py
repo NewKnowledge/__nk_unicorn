@@ -13,7 +13,6 @@ STOP_TIME = os.getenv('STOP_TIME', to_date_string(pd.datetime.now()))
 IMAGE_LIMIT = os.getenv('IMAGE_LIMIT', 1000)
 
 communities = get_community_names()
-logging.info(f'COMMUNITIES: {communities}')
 
 for community_name in communities:
     try:
