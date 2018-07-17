@@ -1,4 +1,5 @@
 import os
+import logging
 
 import numpy as np
 from sqlalchemy import text
@@ -28,7 +29,7 @@ def insert_clusters(community_name, urls, labels):
 
 def remove_community_clusters(community_name):
     connection = get_connection(DB_CONFIG['cluster'])
-    query = text('''delete 
+    query = text('''delete
         from image_clusters.cluster_labels as labels
         where labels.community_name=:community_name
         returning *
@@ -56,10 +57,10 @@ def get_community_image_urls(community_name, start_time, stop_time, image_limit=
         from social.links l
         join social.posts_links pl on pl.link_id=l.link_id
         join social.posts p on pl.post_id=p.post_id
-        join social.communities_posts cp on cp.post_id=p.post_id 
-        where l.type='image' 
+        join social.communities_posts cp on cp.post_id=p.post_id
+        where l.type='image'
         and cp.community_name = :community_name
-        and p.published_at >= :start_time 
+        and p.published_at >= :start_time
         and p.published_at <= :stop_time
         {limit_statement};
         ''')
@@ -75,14 +76,15 @@ def get_visual_clusters(community_name, start_time, stop_time, image_limit=None)
         assert len(image_urls) <= int(image_limit)
 
     if not image_urls:
-        return f'No images found in {community_name} community between {start_time} and {stop_time}'
+        logging.info(f'No images found in {community_name} community between {start_time} and {stop_time}')
+        return [], None
 
     # NOTE that image_urls returned here may be shorter than input if some urls failed
     num_urls = len(image_urls)
     array_data, image_urls = image_net.get_features_from_urls(image_urls)
     num_dropped = num_urls - len(image_urls)
     if num_dropped > 0:
-        print('unable to retreive', num_dropped, 'urls out of', num_urls)
+        logging.info(f'unable to retreive {num_dropped} urls out of {num_urls}')
 
     assert array_data.shape[0] == len(image_urls)
 
