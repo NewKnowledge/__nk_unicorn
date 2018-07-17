@@ -6,7 +6,7 @@ import pandas as pd
 from http_wrapper import get_community_names, get_visual_clusters, insert_clusters, remove_community_clusters
 from http_wrapper.http_utils import to_date_string
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 START_TIME = os.getenv('START_TIME', to_date_string(pd.datetime.now() - pd.Timedelta('14d')))
 STOP_TIME = os.getenv('STOP_TIME', to_date_string(pd.datetime.now()))
