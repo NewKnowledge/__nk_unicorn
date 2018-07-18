@@ -69,7 +69,7 @@ class Unicorn:
         self.n_components = n_components
 
         # TODO options for other dim reduction (random projections, tSNE)
-        self.dim_reduction_alg = PCA(n_components=self.n_components, copy=False)
+        self.dim_reduction_alg = PCA(n_components=self.n_components, copy=False, svd_solver='randomized')
 
         # TODO options for other clustering algs (kmeans, agglomerative)
         self.cluster_alg = DBSCAN(eps=35, min_samples=1)
