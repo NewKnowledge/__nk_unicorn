@@ -14,7 +14,7 @@ services:
       - cluster-db
       # - social-db
     environment:
-      - IMAGE_LIMIT=1000
+      - IMAGE_LIMIT=4000
     ports:
       - 5000:5000
     networks:
