@@ -1,0 +1,13 @@
+cachetools
+flask
+Keras
+markdown
+numpy 
+pandas 
+Pillow
+psycopg2-binary
+requests
+retrying
+scikit-learn
+sqlalchemy
+tensorflow

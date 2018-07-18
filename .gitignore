@@ -1,5 +1,6 @@
+*.h5
 *.DS_Store
-config.py
+*.env
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
