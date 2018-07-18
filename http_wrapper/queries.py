@@ -67,7 +67,7 @@ def get_community_image_urls(community_name, start_time, stop_time, image_limit=
     return [res[0] for res in connection.execute(query, **query_params)]
 
 
-def get_visual_clusters(community_name, start_time, stop_time, image_limit=None):
+def get_visual_clusters(community_name, start_time, stop_time, image_limit=None, n_channels=None):
 
     assert isinstance(start_time, str) and isinstance(stop_time, str)
     image_urls = get_community_image_urls(community_name, start_time, stop_time, image_limit=image_limit)
@@ -79,15 +79,18 @@ def get_visual_clusters(community_name, start_time, stop_time, image_limit=None)
         logging.info(f'No images found in {community_name} community between {start_time} and {stop_time}')
         return [], None
 
-    # NOTE that image_urls returned here may be shorter than input if some urls failed
     num_urls = len(image_urls)
-    array_data, image_urls = image_net.get_features_from_urls(image_urls)
+    logging.info(f'getting features for {num_urls} image urls using {n_channels if n_channels else "all"} channels')
+
+    # NOTE that image_urls returned here may be shorter than input if some urls failed
+    array_data, image_urls = image_net.get_features_from_urls(image_urls, n_channels=n_channels)
     num_dropped = num_urls - len(image_urls)
     if num_dropped > 0:
         logging.info(f'unable to retreive {num_dropped} urls out of {num_urls}')
 
     assert array_data.shape[0] == len(image_urls)
 
+    logging.info(f'clustering array of shape {array_data.shape}')
     labels = unicorn.cluster(array_data)
 
     return image_urls, labels
