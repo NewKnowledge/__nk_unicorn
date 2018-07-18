@@ -25,7 +25,7 @@ node {
         /* Kick off another job to use the newly registered images */
         stage "Deploy on K8s"
         // Branches to deploy
-        def buildableBranches = ["dev"]
+        def buildableBranches = ["dev", "master"]
         if (!buildableBranches.contains(BRANCH_NAME)) {
             currentBuild.result = 'ABORTED'
             error('Stopping early: Branch built is not listed to deploy to k8s.')
