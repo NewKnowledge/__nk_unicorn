@@ -11,8 +11,6 @@ import logging
 
 from .image_utils import image_array_from_path, image_array_from_url
 
-standard_scaler = StandardScaler(copy=False)
-
 
 class ImagenetModel:
 
