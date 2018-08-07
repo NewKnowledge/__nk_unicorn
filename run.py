@@ -9,12 +9,13 @@ from http_wrapper.http_utils import to_date_string
 # logging.basicConfig(level=logging.DEBUG)
 logging.basicConfig(level=logging.INFO)
 
-START_TIME = os.getenv('START_TIME', to_date_string(pd.datetime.now() - pd.Timedelta('14d')))
+START_TIME = os.getenv('START_TIME', to_date_string(pd.datetime.now() - pd.Timedelta('7d')))
 STOP_TIME = os.getenv('STOP_TIME', to_date_string(pd.datetime.now()))
 IMAGE_LIMIT = os.getenv('IMAGE_LIMIT', 4000)
 NUM_CHANNELS = os.getenv('NUM_CHANNELS', 64)
 
-communities = get_community_names()
+EXCLUDE_COMMUNITIES = ['starbucks', 'exxon', 'cap', 'hamiltonredux']
+communities = [c for c in get_community_names() if c not in EXCLUDE_COMMUNITIES]
 
 for community_name in communities:
     try:
